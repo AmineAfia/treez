@@ -71,4 +71,3 @@ The **exemplary atoms** that come with Treez are thought to model a common simul
 ## Contribute
 
 If every user of Treez creates a new atom and feeds it back to the Treez project, a large open source **atom library** will arise with time. The **extensible plugin structure** of Eclipse is perfectly suited for this purpose. If you want to contribute to Treez please start with creating a new issue ticket and describe your atom suggestions. Bug reports and ideas on how to improve the already existing atoms are also very welcome.  
-
