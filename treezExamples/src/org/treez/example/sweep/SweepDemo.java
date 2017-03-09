@@ -37,7 +37,7 @@ public class SweepDemo extends ModelProvider {
 		y.setValueString("20");
 		genericModel.addChild(y);
 
-		String resourcePath = "D:/EclipseJava/workspaceTreez/treezExamples/src/";
+		String resourcePath = "D:/EclipseJava/workspace_Treez/treezExamples/src/";
 
 		//executable
 		String inputFilePath = resourcePath + "input.txt";

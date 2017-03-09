@@ -61,14 +61,12 @@ public class SweepDemoWithTableImportFromSqLite extends ModelProvider {
 		tableImport.sourceType.set(TableSourceType.SQLITE);
 		tableImport.linkSource.set(true);
 		tableImport.inheritSourceFilePath.set(false);
-		tableImport.sourceFilePath.set("D:/EclipseJava/workspaceTreez/TreezExamples/resources/example.sqlite");
+		tableImport.sourceFilePath.set("D:/EclipseJava/workspace_Treez/TreezExamples/resources/example.sqlite");
 		tableImport.tableName.set("example");
 		tableImport.customJobId.set("31");
 		tableImport.useCustomQuery.set(true);
 		tableImport.customQuery.set("select * from example where id = {$jobId$}");
 		tableImport.resultTableModelPath.set("root.results.data.table");
-
-		//#end region
 
 		//#end region
 
@@ -96,7 +94,7 @@ public class SweepDemoWithTableImportFromSqLite extends ModelProvider {
 		Table table = data.createTable("table");
 		TableSource TableSource = table.createTableSource("TableSource");
 		TableSource.sourceType.set(TableSourceType.SQLITE);
-		TableSource.filePath.set("D:/EclipseJava/workspaceTreez/TreezExamples/resources/example.sqlite");
+		TableSource.filePath.set("D:/EclipseJava/workspace_Treez/TreezExamples/resources/example.sqlite");
 		TableSource.tableName.set("example");
 		TableSource.jobId.set("30");
 		TableSource.useCustomQuery.set(true);

@@ -1,6 +1,7 @@
 package org.treez.example.picking;
 
 import org.treez.core.atom.variablefield.DoubleVariableField;
+import org.treez.core.data.table.TableSourceType;
 import org.treez.core.scripting.ModelProvider;
 import org.treez.data.table.nebula.Table;
 import org.treez.model.atom.Models;
@@ -10,6 +11,8 @@ import org.treez.model.atom.inputFileGenerator.InputFileGenerator;
 import org.treez.model.atom.tableImport.TableImport;
 import org.treez.results.atom.results.Results;
 import org.treez.study.atom.Studies;
+import org.treez.study.atom.picking.Picking;
+import org.treez.study.atom.picking.Sample;
 import org.treez.views.tree.rootAtom.Root;
 
 public class PickingDemo extends ModelProvider {
@@ -35,17 +38,21 @@ public class PickingDemo extends ModelProvider {
 		y.setValueString("20");
 		genericModel.addChild(y);
 
-		String resourcePath = "D:/EclipseJava/workspaceTreez/treezExamples/src/";
+		String resourcePath = "D:/EclipseJava/workspace_Treez/treezExamples/src/";
 
 		//executable
 		String inputFilePath = resourcePath + "input.txt";
 		String importFilePath = resourcePath + "importData.txt";
 
-		Executable executable = new Executable("executable");
-		executable.executablePath.set(resourcePath + "executable.bat");
-		executable.inputPath.set(inputFilePath);
-		executable.outputPath.set(importFilePath);
-		models.addChild(executable);
+		Executable executable = models.createExecutable("executable");
+		executable.executablePath.set("foo");
+		executable.commandInfo.set("\"foo\"");
+		executable.executionStatusInfo.set("Not yet executed");
+		executable.jobIndexInfo.set("31");
+		//executable.executablePath.set(resourcePath + "executable.bat");
+		//executable.inputPath.set(inputFilePath);
+		//executable.outputPath.set(importFilePath);
+		//models.addChild(executable);
 
 		InputFileGenerator inputFile = new InputFileGenerator("inputFileGenerator");
 		inputFile.templateFilePath.set(resourcePath + "template.txt");
@@ -54,15 +61,30 @@ public class PickingDemo extends ModelProvider {
 		inputFile.valueExpression.set("<value>");
 		executable.addChild(inputFile);
 
-		TableImport dataImport = new TableImport("dataImport");
-		dataImport.sourceFilePath.set(importFilePath);
+		TableImport dataImport = executable.createTableImport("tableImport");
+		dataImport.sourceType.set(TableSourceType.SQLITE);
+		dataImport.linkSource.set(true);
+		dataImport.inheritSourceFilePath.set(false);
+		dataImport.sourceFilePath.set("D:/EclipseJava/workspace_Treez/TreezExamples/resources/example.sqlite");
+		dataImport.tableName.set("example");
+		dataImport.customJobId.set("31");
+		dataImport.useCustomQuery.set(true);
+		//dataImport.appendData.set(false);
+		dataImport.customQuery.set("select * from example where id = {$jobId$}");
 		dataImport.resultTableModelPath.set("root.results.data.table");
-		dataImport.appendData.set(false);
-		executable.addChild(dataImport);
+		//executable.addChild(dataImport);
 
 		//studies------------------------------------------------------------
 		Studies studies = new Studies("studies");
 		root.addChild(studies);
+
+		Picking picking0 = studies.createPicking("picking0");
+		picking0.modelToRunModelPath.set("root.models.executable");
+		picking0.sourceModelPath.set("root.models.genericModel");
+
+		Sample sample0 = picking0.createSample("sample0");
+
+		Sample sample1 = picking0.createSample("sample1");
 
 		//results------------------------------------------------------------
 		Results results = new Results("results");

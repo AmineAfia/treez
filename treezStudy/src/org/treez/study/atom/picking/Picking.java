@@ -24,6 +24,7 @@ import org.treez.core.atom.attribute.checkBox.CheckBox;
 import org.treez.core.atom.attribute.fileSystem.FilePath;
 import org.treez.core.atom.attribute.modelPath.ModelPath;
 import org.treez.core.atom.attribute.modelPath.ModelPathSelectionType;
+import org.treez.core.atom.attribute.text.TextField;
 import org.treez.core.atom.base.AbstractAtom;
 import org.treez.core.atom.variablefield.DoubleVariableField;
 import org.treez.core.atom.variablefield.IntegerVariableField;
@@ -47,9 +48,9 @@ import org.treez.study.Activator;
 import org.treez.study.atom.AbstractParameterVariation;
 
 /**
- * Represents a picking parameter variation. The variation does does not walk through a whole definition space. Instead,
- * a few parameter tuples are "picked". The picked parameter tuples do not have to be located on a rectangular grid in
- * the definition space.
+ * Represents a picking parameter variation. The variation does not walk through a whole definition space. Instead, a
+ * few parameter tuples are "picked". The picked parameter tuples do not have to be located on a rectangular grid in the
+ * definition space.
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public class Picking extends AbstractParameterVariation implements NumberRangeProvider {
@@ -136,6 +137,14 @@ public class Picking extends AbstractParameterVariation implements NumberRangePr
 		ModelPathSelectionType selectionType = ModelPathSelectionType.FLAT;
 		AbstractAtom<?> modelEntryPoint = this;
 
+		//studyId
+		TextField studyIdField = pickingSection.createTextField(studyId, this, "");
+		studyIdField.setLabel("Id");
+
+		//description
+		TextField descriptionField = pickingSection.createTextField(studyDescription, this);
+		descriptionField.setLabel("Description");
+
 		//model to run
 		String modelToRunDefaultValue = "";
 		pickingSection
@@ -149,7 +158,7 @@ public class Picking extends AbstractParameterVariation implements NumberRangePr
 				Model.class, selectionType, modelEntryPoint, false);
 		modelPath.setLabel("Variable source model (provides variables)");
 
-		//time dependent picking
+		//check box for time dependent picking
 		Section timeDependentSection = dataPage.createSection("timeDependent", absoluteHelpContextId);
 		timeDependentSection.setLabel("Time dependent picking");
 		timeDependentSection.setExpanded(false);
@@ -157,12 +166,14 @@ public class Picking extends AbstractParameterVariation implements NumberRangePr
 		isTimeDependentCheckBox.setLabel("Use time series");
 		isTimeDependentCheckBox.set(false);
 
+		// Input field for choosing a time variable
 		Class<?>[] supportedVariableClasses = { IntegerVariableField.class, DoubleVariableField.class };
 		ModelPath timeVariablePath = timeDependentSection.createModelPath(timeVariableModelPath, this, "",
 				supportedVariableClasses);
 		timeVariablePath.setLabel("Time variable");
 		timeVariablePath.setEnabled(false);
 
+		// Time range updater
 		timeVariablePath.addModificationConsumer("recreateTimeRangeAtom", () -> {
 			String variablePath = timeVariablePath.get();
 			recreateTimeRangeAtom(timeDependentSection, variablePath);

@@ -66,6 +66,7 @@ public class PickingModelInputGenerator {
 			} else {
 
 				for (Sample sample : samples) {
+					//TODO: check why double is not accepted
 					ModelInput modelInput = createModelInputFromSample(sourceModelPath, studyId, studyDescription,
 							sample);
 					modelInputs.add(modelInput);
