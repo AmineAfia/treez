@@ -1,9 +1,10 @@
 package org.treez.example.picking;
 
-import org.treez.core.atom.variablefield.DoubleVariableField;
+import org.treez.core.atom.variablefield.IntegerVariableField;
 import org.treez.core.data.table.TableSourceType;
 import org.treez.core.scripting.ModelProvider;
 import org.treez.data.table.nebula.Table;
+import org.treez.data.tableSource.TableSource;
 import org.treez.model.atom.Models;
 import org.treez.model.atom.executable.Executable;
 import org.treez.model.atom.genericInput.GenericInputModel;
@@ -27,16 +28,23 @@ public class PickingDemo extends ModelProvider {
 		root.addChild(models);
 
 		//generic model
+		//TODO: Why Double variables cause the following problem for simple pickings?
+		// "Could not copy value of type 'java.lang.Double'. It must implement Copiable."
+
 		GenericInputModel genericModel = new GenericInputModel("genericModel");
 		models.addChild(genericModel);
 
-		DoubleVariableField x = new DoubleVariableField("x");
-		x.setValueString("10");
+		IntegerVariableField x = new IntegerVariableField("x");
+		x.set(10);
 		genericModel.addChild(x);
 
-		DoubleVariableField y = new DoubleVariableField("y");
-		y.setValueString("20");
+		IntegerVariableField y = new IntegerVariableField("y");
+		y.set(20);
 		genericModel.addChild(y);
+
+		IntegerVariableField t = new IntegerVariableField("t");
+		t.set(1);
+		genericModel.addChild(t);
 
 		String resourcePath = "D:/EclipseJava/workspace_Treez/treezExamples/src/";
 
@@ -90,12 +98,21 @@ public class PickingDemo extends ModelProvider {
 		Results results = new Results("results");
 		root.addChild(results);
 
-		//create data table with two columns---------------------------------
 		org.treez.results.atom.data.Data data = new org.treez.results.atom.data.Data("data");
 		results.addChild(data);
 
-		Table table = new Table("table");
-		data.addChild(table);
+		Table table = data.createTable("table");
+		TableSource TableSource = table.createTableSource("TableSource");
+		TableSource.sourceType.set(TableSourceType.SQLITE);
+		TableSource.filePath.set("D:/EclipseJava/workspace_Treez/TreezExamples/resources/example.sqlite");
+		TableSource.tableName.set("example");
+		TableSource.jobId.set("30");
+		TableSource.useCustomQuery.set(true);
+		TableSource.customQuery.set("select * from example where id = {$jobId$}");
+
+		//create data table with two columns---------------------------------
+		//Table table = new Table("table");
+		//data.addChild(table);
 
 		return root;
 

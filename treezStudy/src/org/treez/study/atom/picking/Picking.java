@@ -158,10 +158,12 @@ public class Picking extends AbstractParameterVariation implements NumberRangePr
 				Model.class, selectionType, modelEntryPoint, false);
 		modelPath.setLabel("Variable source model (provides variables)");
 
-		//check box for time dependent picking
+		// Time dependent picking Section
 		Section timeDependentSection = dataPage.createSection("timeDependent", absoluteHelpContextId);
 		timeDependentSection.setLabel("Time dependent picking");
 		timeDependentSection.setExpanded(false);
+
+		//check box for time dependent picking
 		CheckBox isTimeDependentCheckBox = timeDependentSection.createCheckBox(isTimeDependent, this);
 		isTimeDependentCheckBox.setLabel("Use time series");
 		isTimeDependentCheckBox.set(false);
