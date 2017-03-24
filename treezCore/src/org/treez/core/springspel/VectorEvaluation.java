@@ -235,6 +235,66 @@ public class VectorEvaluation {
 	}
 
 	/**
+	 * Parses a string to a list of strings.
+	 *
+	 * @param valueString
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<String> parseStringToStringList(String valueString) {
+
+		//replace NaN with #NaN
+		String adaptedValueString = valueString.replace("NaN", "#NaN");
+
+		//parse
+		Expression expression = null;
+		try {
+			expression = parser.parseExpression(adaptedValueString);
+		} catch (NullPointerException exception) {
+
+		}
+
+		if (expression == null) {
+			String message = "Could not parse the value string '" + valueString
+					+ "' to an String list. Returning  a list containing a single null value.";
+			LOG.warn(message);
+			List<String> nanList = new ArrayList<>();
+			nanList.add(null);
+			return nanList;
+		}
+
+		//evaluate
+		Object result = expression.getValue(context, List.class);
+
+		//post process result
+		if (result != null) {
+			boolean isList = result instanceof List<?>;
+			if (isList) {
+				List<String> resultList = (List<String>) result;
+				return resultList;
+			} else {
+				boolean isSingleValue = result instanceof String;
+				if (isSingleValue) {
+					return createSingleStringListFromResult(result);
+				} else {
+					String message = "Could not parse valueString to String since the resutl type '"
+							+ result.getClass().getSimpleName() + "' is not yet implemented.";
+					throw new IllegalArgumentException(message);
+				}
+
+			}
+		} else {
+			String message = "Could not parse the value string '" + valueString
+					+ "' to an String list. Returning  a list containing a single null value.";
+			LOG.warn(message);
+			List<String> nanList = new ArrayList<>();
+			nanList.add(null);
+			return nanList;
+		}
+
+	}
+
+	/**
 	 * Creates a Double list containing a single Double value which is passed as an object.
 	 *
 	 * @param result
@@ -257,6 +317,19 @@ public class VectorEvaluation {
 		List<Integer> singleValueList = new ArrayList<>();
 		Number numberValue = (Number) result;
 		singleValueList.add(numberValue.intValue());
+		return singleValueList;
+	}
+
+	/**
+	 * Creates a String list containing a single String value which is passed as an object.
+	 *
+	 * @param result
+	 * @return
+	 */
+	private static List<String> createSingleStringListFromResult(Object result) {
+		List<String> singleValueList = new ArrayList<>();
+		String stringValue = (String) result;
+		singleValueList.add(stringValue);
 		return singleValueList;
 	}
 
@@ -317,6 +390,35 @@ public class VectorEvaluation {
 		}
 
 		String vectorString = "{" + String.join(",", items) + "}";
+		return vectorString;
+	}
+
+	/**
+	 * Creates a display string for the given string list
+	 *
+	 * @param valueList
+	 * @return
+	 */
+	public static String stringListToDisplayString(List<String> valueList) {
+		Objects.requireNonNull(valueList, "VectorList must be non null.");
+
+		boolean isEmpty = valueList.isEmpty();
+		if (isEmpty) {
+			return "{}";
+		}
+
+		boolean hasSingleEntry = (valueList.size() == 1);
+		if (hasSingleEntry) {
+			String vectorString = "\'${" + valueList.get(0) + "}\'";
+			return vectorString;
+		}
+
+		List<String> items = new ArrayList<>();
+		for (String stringItem : valueList) {
+			items.add("" + stringItem);
+		}
+
+		String vectorString = "\'${" + String.join(",", items) + "}\'";
 		return vectorString;
 	}
 

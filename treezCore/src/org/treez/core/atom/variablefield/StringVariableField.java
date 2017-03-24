@@ -1,5 +1,8 @@
 package org.treez.core.atom.variablefield;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -7,6 +10,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.treez.core.Activator;
 import org.treez.core.adaptable.FocusChangingRefreshable;
 import org.treez.core.atom.variablelist.AbstractVariableListField;
+import org.treez.core.atom.variablelist.StringVariableListField;
 
 /**
  * Represents a string model variable (-text field)
@@ -78,7 +82,16 @@ public class StringVariableField extends AbstractVariableField<StringVariableFie
 
 	@Override
 	public AbstractVariableListField<?, String> createVariableListField() {
-		throw new IllegalStateException("Not yet implemented");
+		//throw new IllegalStateException("Not yet implemented");
+
+		StringVariableListField listField = new StringVariableListField(name);
+		List<String> valueList = new ArrayList<>();
+		String currentValue = get();
+		valueList.add(currentValue);
+		listField.set(valueList);
+
+		return listField;
+
 	}
 
 	//#end region
