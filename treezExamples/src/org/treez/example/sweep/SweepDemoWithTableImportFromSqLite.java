@@ -1,6 +1,6 @@
 package org.treez.example.sweep;
 
-import org.treez.core.atom.variablefield.IntegerVariableField;
+import org.treez.core.atom.variablefield.DoubleVariableField;
 import org.treez.core.data.column.ColumnType;
 import org.treez.core.data.table.TableSourceType;
 import org.treez.core.scripting.ModelProvider;
@@ -41,11 +41,11 @@ public class SweepDemoWithTableImportFromSqLite extends ModelProvider {
 		//#region GENERICINPUTMODEL0
 
 		GenericInputModel genericInputModel0 = models0.createGenericInputModel("genericInputModel0");
-		IntegerVariableField integerVariable0 = genericInputModel0.createIntegerVariableField("integerVariable0");
-		integerVariable0.set(10);
+		DoubleVariableField integerVariable0 = genericInputModel0.createDoubleVariableField("integerVariable0");
+		integerVariable0.set((double) 10);
 
-		IntegerVariableField integerVariable1 = genericInputModel0.createIntegerVariableField("integerVariable1");
-		integerVariable1.set(3);
+		DoubleVariableField integerVariable1 = genericInputModel0.createDoubleVariableField("integerVariable1");
+		integerVariable1.set((double) 3);
 
 		//#end region
 

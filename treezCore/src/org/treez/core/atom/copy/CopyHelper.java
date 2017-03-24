@@ -95,6 +95,22 @@ public final class CopyHelper {
 			return (T) newValue;
 		}
 
+		//check for Number
+		boolean isNumber = valueToCopy instanceof Double;
+		if (isNumber) {
+			Double oldValue = (double) valueToCopy;
+			Double newValue = new Double(oldValue);
+			return (T) newValue;
+		}
+
+		//check for String
+		boolean isString = valueToCopy instanceof String;
+		if (isString) {
+			String oldValue = (String) valueToCopy;
+			String newValue = new String(oldValue);
+			return (T) newValue;
+		}
+
 		//check for Copiable
 		boolean isCopiable = valueToCopy instanceof Copiable<?>;
 		if (isCopiable) {

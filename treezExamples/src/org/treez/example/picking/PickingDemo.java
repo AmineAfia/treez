@@ -1,5 +1,6 @@
 package org.treez.example.picking;
 
+import org.treez.core.atom.variablefield.DoubleVariableField;
 import org.treez.core.atom.variablefield.IntegerVariableField;
 import org.treez.core.data.table.TableSourceType;
 import org.treez.core.scripting.ModelProvider;
@@ -34,13 +35,21 @@ public class PickingDemo extends ModelProvider {
 		GenericInputModel genericModel = new GenericInputModel("genericModel");
 		models.addChild(genericModel);
 
-		IntegerVariableField x = new IntegerVariableField("x");
-		x.set(10);
+		DoubleVariableField x = genericModel.createDoubleVariableField("integerVariable0");
+		x.set((double) 10);
 		genericModel.addChild(x);
 
-		IntegerVariableField y = new IntegerVariableField("y");
-		y.set(20);
+		DoubleVariableField y = genericModel.createDoubleVariableField("integerVariable1");
+		y.set((double) 3);
 		genericModel.addChild(y);
+
+		//		IntegerVariableField x = new IntegerVariableField("x");
+		//		x.set(10);
+		//
+		//
+		//		IntegerVariableField y = new IntegerVariableField("y");
+		//		y.set(20);
+		//		genericModel.addChild(y);
 
 		IntegerVariableField t = new IntegerVariableField("t");
 		t.set(1);
