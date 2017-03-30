@@ -109,7 +109,7 @@ public class StringVariableField extends AbstractVariableField<StringVariableFie
 	}
 
 	@Override
-	public void set(String value) {
+	public StringVariableField set(String value) {
 		disableModificationListeners();
 		if (value == null) {
 			setValueString("");
@@ -118,6 +118,7 @@ public class StringVariableField extends AbstractVariableField<StringVariableFie
 		}
 		enableModificationListeners();
 		triggerListeners();
+		return getThis();
 	}
 
 	//#end region

@@ -74,6 +74,8 @@ public class Section extends AbstractAttributeContainerAtom<Section> {
 
 	private boolean isEnabled = true;
 
+	private boolean isVisible = true;
+
 	//#end region
 
 	//#region CONSTRUCTORS
@@ -1013,6 +1015,20 @@ public class Section extends AbstractAttributeContainerAtom<Section> {
 		this.isEnabled = enable;
 		if (controlProvider != null) {
 			controlProvider.setEnabled(enable);
+		}
+		return getThis();
+	}
+
+	@Override
+	public boolean isVisible() {
+		return isVisible;
+	}
+
+	@Override
+	public Section setVisible(boolean visible) {
+		this.isVisible = visible;
+		if (controlProvider != null) {
+			controlProvider.setVisible(visible);
 		}
 		return getThis();
 	}
