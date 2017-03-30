@@ -16,8 +16,10 @@ import org.treez.core.atom.attribute.attributeContainer.section.Section;
 import org.treez.core.atom.attribute.checkBox.CheckBox;
 import org.treez.core.atom.base.AbstractAtom;
 import org.treez.core.atom.variablefield.VariableField;
+import org.treez.core.atom.variablefield.VariableFieldProvider;
 import org.treez.core.atom.variablelist.AbstractVariableListField;
 import org.treez.core.atom.variablelist.DoubleVariableListField;
+import org.treez.core.atom.variablelist.FilePathList;
 import org.treez.core.atom.variablelist.IntegerVariableListField;
 import org.treez.core.attribute.Attribute;
 import org.treez.core.attribute.Wrap;
@@ -29,7 +31,7 @@ import org.treez.study.Activator;
  * Represents a picking sample for a picking parameter variation.
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
-public class Sample extends AdjustableAtom {
+public class Sample extends AdjustableAtom implements VariableFieldProvider {
 
 	//#region ATTRIBUTES
 
@@ -37,6 +39,8 @@ public class Sample extends AdjustableAtom {
 	 * The enabled state check box
 	 */
 	public Attribute<Boolean> enabled = new Wrap<>(new CheckBox("enabled", true));
+
+	protected Attribute<List<VariableField<?, ?>>> filepathbutton = new Wrap<>();
 
 	private Section pickingSection;
 
@@ -106,6 +110,11 @@ public class Sample extends AdjustableAtom {
 		createOrUpdateVariableFields(pickingSection);
 
 		createEnabledCheckBox();
+
+		// Activate this method if you want the see the path editor in the sample
+		//(The reason why it is here is because of the inheritance problem in org.treez.core.atom.variablefield.FilePathVariableField)
+		// See the method createVariableListField()
+		//createEditPathButton();
 
 		setModel(root);
 
@@ -307,6 +316,11 @@ public class Sample extends AdjustableAtom {
 		});
 	}
 
+	protected void createEditPathButton() {
+		FilePathList treezList = pickingSection.createFilePathEditor(filepathbutton, this);
+		List<VariableField<?, ?>> availableVariableFields = getVariableFieldsFromPickingParent();
+	}
+
 	//#end region
 
 	/**
@@ -423,6 +437,12 @@ public class Sample extends AdjustableAtom {
 		if (treeViewRefreshable != null) {
 			treeViewRefreshable.refresh();
 		}
+	}
+
+	@Override
+	public List<VariableField> getVariableField() {
+		List<VariableField> variableValue = new ArrayList(variableData.values());
+		return variableValue;
 	}
 
 	//#end region

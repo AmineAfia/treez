@@ -14,6 +14,8 @@ import org.treez.core.atom.attribute.modelPath.ModelPathSelectionType;
 import org.treez.core.atom.attribute.text.TextField;
 import org.treez.core.atom.base.AbstractAtom;
 import org.treez.core.atom.variablefield.IntegerVariableField;
+import org.treez.core.atom.variablefield.VariableField;
+import org.treez.core.atom.variablefield.VariableFieldProvider;
 import org.treez.core.atom.variablelist.NumberRangeProvider;
 import org.treez.core.atom.variablerange.VariableRange;
 import org.treez.core.attribute.Attribute;
@@ -52,14 +54,24 @@ public class PickingProbe extends AbstractProbe {
 	public final Attribute<String> domainLabel = new Wrap<>();
 
 	/**
+	 * domain range (values of first column)
+	 */
+	public final Attribute<String> domainRange = new Wrap<>();
+
+	/**
 	 * The model path to a column that is used to retrieve domain values
 	 */
 	public final Attribute<String> domainColumnPath = new Wrap<>();
 
 	/**
-	 * The model path to Picking that is used to retrieve time values
+	 * The model path to Picking for the samples prob
 	 */
 	public final Attribute<String> pickingPath = new Wrap<>();
+
+	/**
+	 * The model path to Sample that is used to retrieve time values
+	 */
+	public final Attribute<String> samplePath = new Wrap<>();
 
 	//probe section
 
@@ -109,9 +121,15 @@ public class PickingProbe extends AbstractProbe {
 
 		ModelPath pickingModelPath = domainSection.createModelPath(pickingPath, this, "", NumberRangeProvider.class,
 				this);
-		pickingModelPath.setLabel("Picking for domain range");
+		pickingModelPath.setLabel("Picking for samples");
 		pickingModelPath.setSelectionType(ModelPathSelectionType.FLAT);
 		pickingModelPath.setEnabled(false);
+
+		ModelPath sampleModelPath = domainSection.createModelPath(samplePath, this, "", VariableFieldProvider.class,
+				this);
+		sampleModelPath.setLabel("Sample for domain range");
+		sampleModelPath.setSelectionType(ModelPathSelectionType.FLAT);
+		sampleModelPath.setEnabled(false);
 
 		ModelPath timeColumnModelPath = domainSection.createModelPath(domainColumnPath, this, "", Column.class, this);
 		timeColumnModelPath.setLabel("Column for domain range");
@@ -123,7 +141,8 @@ public class PickingProbe extends AbstractProbe {
 
 			domainLabelField.set("Sample");
 			domainLabelField.setEnabled(false);
-			pickingModelPath.setEnabled(false);
+			pickingModelPath.setEnabled(true);
+			sampleModelPath.setEnabled(false);
 			timeColumnModelPath.setEnabled(false);
 
 			boolean isPickingTimeSeries = isPickingTimeSeries();
@@ -132,7 +151,7 @@ public class PickingProbe extends AbstractProbe {
 				domainLabelField.set("Time");
 				domainLabelField.setEnabled(true);
 				if (isPickingTimeSeries) {
-					pickingModelPath.setEnabled(true);
+					sampleModelPath.setEnabled(true);
 				}
 				if (isColumnTimeSeries) {
 					timeColumnModelPath.setEnabled(true);
@@ -223,7 +242,10 @@ public class PickingProbe extends AbstractProbe {
 			columnBlueprints = createColumnBlueprintsWithTimeSeries();
 		} else {
 			//domain column
-			columnBlueprints.add(new ColumnBlueprint("Sample", ColumnType.STRING, ""));
+			List<VariableField> sampleVariables = getVariablefieldsInSamples();
+			for (VariableField sampleVariable : sampleVariables) {
+				columnBlueprints.add(new ColumnBlueprint(sampleVariable.getLabel(), ColumnType.STRING, ""));
+			}
 
 			//probe column
 			ColumnType probeColumnType = this.getPickingProbeColumnType();
@@ -419,18 +441,69 @@ public class PickingProbe extends AbstractProbe {
 			//fillProbeTable(table, timeRangeValues, columnNames, sweepOutputPath, relativeProbeTablePath, prefix);
 
 		} else {
-
+			sampleCollectProbeDataAndFillTable(table);
 		}
 
 		LOG.info("Filled probe table.");
 
 	}
 
+	private void sampleCollectProbeDataAndFillTable(Table table) {
+		//get x information
+		String sampleVariableLabelString = domainLabel.get();
+		String pickingPathString = pickingPath.get();
+		boolean pickingSpecified = !"".equals(pickingPathString);
+
+		List<String> variableLabelStrings = new ArrayList<String>();
+		List<VariableField> sampleVariables = new ArrayList<VariableField>();
+		List<String> sampleValues = new ArrayList<String>();
+		if (pickingSpecified) {
+			sampleVariables = getVariablefieldsInSamples();
+			for (VariableField xRangeValue : sampleVariables) {
+				sampleValues.add(String.valueOf(xRangeValue));
+				variableLabelStrings.add(String.valueOf(xRangeValue.getLabel()));
+			}
+		}
+
+		//get y information
+		String yLabelString = probeLabel.get();
+
+		//List<String> columnNames = createColumnNames(sampleVariableLabelString);
+		List<String> columnNames = variableLabelStrings;
+
+		//get sweep output path
+		String pickingOutputPath = pickingOutput.get();
+
+		//get probe table relative path
+		String firstProbeTableRelativePath = getFirstProbeRelativePath();
+		String[] pathItems = firstProbeTableRelativePath.split("\\.");
+		String firstPrefix = pathItems[0];
+		int firstIndex = firstPrefix.length() + 1;
+		String relativeProbeTablePath = firstProbeTableRelativePath.substring(firstIndex);
+
+		//get probe table prefix
+		String prefix = getProbeTablePrefix(firstPrefix);
+
+		fillProbeTable(table, sampleValues, columnNames, pickingOutputPath, relativeProbeTablePath, prefix);
+	}
+
+	private List<VariableField> getVariablefieldsInSamples() {
+		List<VariableField> samplesVariableFields = new ArrayList<VariableField>();
+		AbstractAtom<?> picking = this.getChildFromRoot(pickingPath.get());
+
+		List<VariableFieldProvider> samples = picking.getChildrenByInterface(VariableFieldProvider.class);
+
+		for (VariableFieldProvider sample : samples) {
+			samplesVariableFields = sample.getVariableField();
+		}
+		return samplesVariableFields;
+	}
+
 	private void fillProbeTable(
 			Table table,
 			List<?> xRangeValues,
 			List<String> columnNames,
-			String sweepOutputPath,
+			String pickingOutputPath,
 			String relativeProbeTablePath,
 			String prefix) {
 		//get probe table row index
@@ -439,7 +512,7 @@ public class PickingProbe extends AbstractProbe {
 		//get probe table column index
 		int probeColumnId = probeColumnIndex.get();
 
-		int sweepIndex = 1;
+		int pickingIndex = 1;
 		for (int rowIndex = 0; rowIndex < xRangeValues.size(); rowIndex++) {
 
 			//create new row
@@ -458,18 +531,39 @@ public class PickingProbe extends AbstractProbe {
 			//fill y column entries
 			for (int columnIndex = 1; columnIndex < columnNames.size(); columnIndex++) {
 				String yColumnName = columnNames.get(columnIndex);
-				String tablePath = sweepOutputPath + "." + prefix + sweepIndex + "." + relativeProbeTablePath;
+				String tablePath = pickingOutputPath + "." + prefix + pickingIndex + "." + relativeProbeTablePath;
 				Object yValue = getProbeValue(tablePath, probeRowId, probeColumnId);
 				row.setEntry(yColumnName, yValue);
 
 				//increase sweep index
-				sweepIndex++;
+				pickingIndex++;
 			}
 
 			//add row
 			table.addRow(row);
 
 		}
+	}
+
+	private List<?> getAllSamplesRangeValues() {
+		String allSamplesPath = pickingPath.get();
+		boolean allSamplesIsSpecified = allSamplesPath != null && !"".equals(allSamplesPath);
+		List<?> allSamplesRangeValues = null;
+		if (allSamplesIsSpecified) {
+			VariableRange<?> allSamplesRangeAtom = this.getChildFromRoot(allSamplesPath);
+			allSamplesRangeValues = allSamplesRangeAtom.getRange();
+		}
+		return allSamplesRangeValues;
+	}
+
+	private static List<String> createColumnNames(String xLabelString) {
+		List<String> columnNames = new ArrayList<>();
+
+		//create first column info (=x column)
+		String xColumnName = xLabelString;
+		columnNames.add(xColumnName);
+
+		return columnNames;
 	}
 
 	private List<Number> getDomainTimeSeriesRange() {
@@ -540,7 +634,7 @@ public class PickingProbe extends AbstractProbe {
 
 		//get probe value
 		String columnHeader = probeTable.getHeaders().get(columnIndex);
-		Row row = probeTable.getRows().get(rowIndex);
+		Row row = probeTable.getPagedRows().get(rowIndex);
 		Object value = row.getEntry(columnHeader);
 
 		//return probe value

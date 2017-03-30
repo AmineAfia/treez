@@ -1,5 +1,8 @@
 package org.treez.core.atom.variablefield;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -8,11 +11,11 @@ import org.treez.core.adaptable.FocusChangingRefreshable;
 import org.treez.core.atom.attribute.base.AbstractStringAttributeAtom;
 import org.treez.core.atom.attribute.fileSystem.FilePath;
 import org.treez.core.atom.variablelist.AbstractVariableListField;
+import org.treez.core.atom.variablelist.StringVariableListField;
 
 public class FilePathVariableField extends FilePath implements VariableField<FilePathVariableField, String> {
 
 	//#region CONSTRUCTORS
-
 	public FilePathVariableField(String name) {
 		super(name);
 		this.setShowEnabledCheckBox(true);
@@ -63,8 +66,20 @@ public class FilePathVariableField extends FilePath implements VariableField<Fil
 
 	@Override
 	public AbstractVariableListField<?, String> createVariableListField() {
+		//TODO: Solve the return type problem to use the FilePathList class in variablelist
+		//		FilePathList listField = new FilePathList(name);
+		//		String currentValue = get();
+		//		listField.setValue(currentValue);
+		//
+		//		return listField;
 
-		throw new IllegalStateException("Not yet implemented");
+		StringVariableListField listField = new StringVariableListField(name);
+		List<String> valueList = new ArrayList<>();
+		String currentValue = get();
+		valueList.add(currentValue);
+		listField.set(valueList);
+
+		return listField;
 	}
 
 	//#end region

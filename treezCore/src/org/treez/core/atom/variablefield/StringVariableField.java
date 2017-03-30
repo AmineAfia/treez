@@ -82,7 +82,6 @@ public class StringVariableField extends AbstractVariableField<StringVariableFie
 
 	@Override
 	public AbstractVariableListField<?, String> createVariableListField() {
-		//throw new IllegalStateException("Not yet implemented");
 
 		StringVariableListField listField = new StringVariableListField(name);
 		List<String> valueList = new ArrayList<>();

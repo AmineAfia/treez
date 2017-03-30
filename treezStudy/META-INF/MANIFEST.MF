@@ -22,5 +22,5 @@ Export-Package: org.treez.study,
  org.treez.study.atom.range,
  org.treez.study.atom.sensitivity,
  org.treez.study.atom.sweep
-Import-Package: org.treez.results.atom.results
 Bundle-Vendor: Stefan Eidelloth
+Import-Package: org.treez.results.atom.results

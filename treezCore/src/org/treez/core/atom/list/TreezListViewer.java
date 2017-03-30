@@ -124,8 +124,7 @@ public class TreezListViewer extends Composite {
 		tableViewerContainer.setLayout(columnLayout);
 
 		//set layout data
-		final GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1);
+		final GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		layoutData.minimumHeight = 100;
 
 		tableViewerContainer.setLayoutData(layoutData);
@@ -140,8 +139,7 @@ public class TreezListViewer extends Composite {
 
 	private void createTableViewer(Composite tableViewerContainer) {
 
-		tableViewer = new TableViewer(tableViewerContainer,
-				SWT.BORDER | SWT.FULL_SELECTION);
+		tableViewer = new TableViewer(tableViewerContainer, SWT.BORDER | SWT.FULL_SELECTION);
 
 		//create column
 		tableViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -188,8 +186,7 @@ public class TreezListViewer extends Composite {
 		}
 
 		String header = treezList.getHeader();
-		EditingSupport editingSupport = new EditingProvider(tableViewer,
-				treezList, header, cellEditor);
+		EditingSupport editingSupport = new EditingProvider(tableViewer, treezList, header, cellEditor);
 		tableViewerColumn.setEditingSupport(editingSupport);
 	}
 
@@ -229,6 +226,7 @@ public class TreezListViewer extends Composite {
 		//resize the row height using a MeasureItem listener
 		final int rowHeight = 23;
 		table.addListener(SWT.MeasureItem, new Listener() {
+
 			@Override
 			public void handleEvent(Event event) {
 				event.height = rowHeight;
@@ -261,7 +259,7 @@ public class TreezListViewer extends Composite {
 		//copy data to clip board
 		Clipboard cb = new Clipboard(Display.getCurrent());
 		TextTransfer textTransfer = TextTransfer.getInstance();
-		cb.setContents(new Object[]{copyString}, new Transfer[]{textTransfer});
+		cb.setContents(new Object[] { copyString }, new Transfer[] { textTransfer });
 
 		LOG.debug(copyString);
 	}
@@ -347,8 +345,7 @@ public class TreezListViewer extends Composite {
 	}
 
 	/**
-	 * Adds a new row by duplicating a row with given row index and inserting it
-	 * at the next position
+	 * Adds a new row by duplicating a row with given row index and inserting it at the next position
 	 *
 	 * @param rowIndex
 	 */
@@ -431,14 +428,12 @@ public class TreezListViewer extends Composite {
 	}
 
 	/**
-	 * Allows the user to select a file path. Returns null if no file path is
-	 * selected.
+	 * Allows the user to select a file path. Returns null if no file path is selected.
 	 *
 	 * @return
 	 */
 	private String selectFilePath(String defaultValue) {
-		FileDialog fileDialog = new FileDialog(
-				Display.getCurrent().getActiveShell(), SWT.SINGLE);
+		FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SINGLE);
 
 		if (defaultValue != null && !defaultValue.isEmpty()) {
 			fileDialog.setFilterPath(defaultValue);
@@ -476,15 +471,13 @@ public class TreezListViewer extends Composite {
 	}
 
 	/**
-	 * Allows the user to select a directory path. Returns null if no directory
-	 * is selected.
+	 * Allows the user to select a directory path. Returns null if no directory is selected.
 	 *
 	 * @return
 	 */
 	private String selectDirectoryPath(String defaultValue) {
 
-		DirectoryDialog directoryDialog = new DirectoryDialog(
-				Display.getCurrent().getActiveShell(), SWT.SINGLE);
+		DirectoryDialog directoryDialog = new DirectoryDialog(Display.getCurrent().getActiveShell(), SWT.SINGLE);
 
 		if (defaultValue != null && !defaultValue.isEmpty()) {
 			directoryDialog.setFilterPath(defaultValue);

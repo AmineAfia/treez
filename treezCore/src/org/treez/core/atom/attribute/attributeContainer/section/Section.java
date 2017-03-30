@@ -26,7 +26,6 @@ import org.treez.core.atom.attribute.fileSystem.DirectoryPath;
 import org.treez.core.atom.attribute.fileSystem.DirectoryPathList;
 import org.treez.core.atom.attribute.fileSystem.FileOrDirectoryPath;
 import org.treez.core.atom.attribute.fileSystem.FilePath;
-import org.treez.core.atom.attribute.fileSystem.FilePathList;
 import org.treez.core.atom.attribute.modelPath.ModelPath;
 import org.treez.core.atom.attribute.modelPath.ModelPathSelectionType;
 import org.treez.core.atom.attribute.plot.FunctionPlotter;
@@ -41,6 +40,7 @@ import org.treez.core.atom.variablefield.IntegerVariableField;
 import org.treez.core.atom.variablefield.QuantityVariableField;
 import org.treez.core.atom.variablefield.VariableField;
 import org.treez.core.atom.variablelist.DoubleVariableListField;
+import org.treez.core.atom.variablelist.FilePathList;
 import org.treez.core.atom.variablelist.IntegerVariableListField;
 import org.treez.core.atom.variablelist.QuantityVariableListField;
 import org.treez.core.atom.variablelist.VariableList;
@@ -785,6 +785,20 @@ public class Section extends AbstractAttributeContainerAtom<Section> {
 		FilePathList filePathList = new FilePathList(name);
 		addChild(filePathList);
 		return filePathList;
+	}
+
+	public FilePathList createFilePathEditor(String name) {
+		FilePathList checkBox = new FilePathList(name);
+		addChild(checkBox);
+		return checkBox;
+	}
+
+	public FilePathList createFilePathEditor(Attribute<List<VariableField<?, ?>>> wrap, Object attributeParent) {
+		String attributeName = getFieldName(wrap, attributeParent);
+		FilePathList filepathbutton = new FilePathList(attributeName);
+		addChild(filepathbutton);
+		filepathbutton.wrap(wrap);
+		return filepathbutton;
 	}
 
 	//#end region

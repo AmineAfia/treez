@@ -1,10 +1,7 @@
 package org.treez.core.atom.variablelist;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -17,6 +14,7 @@ import org.treez.core.adaptable.FocusChangingRefreshable;
 import org.treez.core.atom.attribute.base.AbstractAttributeAtom;
 import org.treez.core.atom.base.annotation.IsParameter;
 import org.treez.core.atom.list.TreezListAtom;
+import org.treez.core.atom.list.TreezListAtomControlAdaption;
 import org.treez.core.atom.variablefield.VariableField;
 import org.treez.core.data.column.ColumnType;
 import org.treez.core.data.row.Row;
@@ -25,7 +23,7 @@ import org.treez.core.swt.CustomLabel;
 /**
  * Allows to edit a list of VariableFields with a combo box for each value
  */
-public class VariableList extends AbstractAttributeAtom<VariableList, List<VariableField<?, ?>>> {
+public class FilePathList extends AbstractAttributeAtom<FilePathList, List<VariableField<?, ?>>> {
 
 	//#region ATTRIBUTES
 
@@ -48,22 +46,27 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	private Composite listContainerComposite;
 
 	/**
+	 * The control adaption of the treez list atom
+	 */
+	private TreezListAtomControlAdaption treezListControlAdaption;
+
+	/**
 	 * Maps from variable name to VariableField
 	 */
-	private Map<String, VariableField<?, ?>> availableVariables;
+	//	private Map<String, VariableField<?, ?>> availableVariables;
 
 	//#end region
 
 	//#region CONSTRUCTORS
 
-	public VariableList(String name) {
+	public FilePathList(String name) {
 		super(name);
 		label = name;
 		createTreezList(null);
 
 	}
 
-	public VariableList(String name, List<VariableField<?, ?>> availableVariables) {
+	public FilePathList(String name, List<VariableField<?, ?>> availableVariables) {
 		super(name);
 		label = name;
 		createTreezList(availableVariables);
@@ -72,7 +75,7 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	/**
 	 * Copy constructor
 	 */
-	protected VariableList(VariableList atomToCopy) {
+	protected FilePathList(FilePathList atomToCopy) {
 		super(atomToCopy);
 		label = atomToCopy.label;
 		treezList = atomToCopy.treezList;
@@ -86,24 +89,26 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	/**
 	 * Creates a treez list that contains Strings/text
 	 */
-	protected void createTreezList(List<VariableField<?, ?>> availableVariableFields) {
+	private void createTreezList(List<VariableField<?, ?>> availableVariableFields) {
 		treezList = new TreezListAtom("treezList");
 		treezList.setColumnType(ColumnType.STRING);
+		treezList.enableFilePathButton();
 
-		setAvailableVariables(availableVariableFields);
+		//setAvailableVariables(availableVariableFields);
+		setDefaultValue("Default Path");
 
 		treezList.setShowHeader(false);
 		treezList.setFirstRowAutoCreation(false);
 	}
 
 	@Override
-	public VariableList getThis() {
+	public FilePathList getThis() {
 		return this;
 	}
 
 	@Override
-	public VariableList copy() {
-		return new VariableList(this);
+	public FilePathList copy() {
+		return new FilePathList(this);
 	}
 
 	@Override
@@ -112,7 +117,7 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	}
 
 	@Override
-	public AbstractAttributeAtom<VariableList, List<VariableField<?, ?>>> createAttributeAtomControl(
+	public AbstractAttributeAtom<FilePathList, List<VariableField<?, ?>>> createAttributeAtomControl(
 			Composite parent,
 			FocusChangingRefreshable treeViewerRefreshable) {
 
@@ -148,7 +153,8 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	 * Creates the control for the treezList by calling the corresponding method of the wrapped TreezListAtom
 	 */
 	private void createTreezListControl() {
-		treezList.createControlAdaption(listContainerComposite, treeViewRefreshable);
+		treezListControlAdaption = (TreezListAtomControlAdaption) treezList
+				.createControlAdaption(listContainerComposite, treeViewRefreshable);
 	}
 
 	/**
@@ -203,16 +209,16 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 		List<VariableField<?, ?>> variableFields = new ArrayList<>();
 		if (!valueString.isEmpty()) {
 			String[] individualValues = valueString.split(",");
-			for (String variableName : individualValues) {
-				VariableField<?, ?> variableField = availableVariables.get(variableName);
-				variableFields.add(variableField);
-			}
+			//			for (String variableName : individualValues) {
+			//				VariableField<?, ?> variableField = availableVariables.get(variableName);
+			//				variableFields.add(variableField);
+			//			}
 		}
 		return variableFields;
 	}
 
 	@Override
-	public VariableList setBackgroundColor(org.eclipse.swt.graphics.Color backgroundColor) {
+	public FilePathList setBackgroundColor(org.eclipse.swt.graphics.Color backgroundColor) {
 		throw new IllegalStateException("Not yet implemented");
 
 	}
@@ -227,7 +233,7 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 		return label;
 	}
 
-	public VariableList setLabel(String label) {
+	public FilePathList setLabel(String label) {
 		this.label = label;
 		return getThis();
 	}
@@ -241,23 +247,30 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	 *
 	 * @param valueString
 	 */
-	public void setValue(String valueString) {
-		Objects.requireNonNull(availableVariables, "Available variables must be set before calling this method.");
-		List<VariableField<?, ?>> variableFields = valueStringToList(valueString);
-		set(variableFields);
+
+	public FilePathList setValue(String valueString) {
+		List<VariableField<?, ?>> stringValues = valueStringToList(valueString);
+		set(stringValues);
+		return getThis();
 	}
 
-	@Override
-	public List<VariableField<?, ?>> get() {
-		Objects.requireNonNull(availableVariables, "Available variables must be set before calling this method.");
-		if (isInitialized()) {
-			String data = treezList.getData(",");
-			List<VariableField<?, ?>> variableFields = valueStringToList(data);
-			return variableFields;
-		} else {
-			return getDefaultValue();
-		}
-	}
+	//	public void setValue(String valueString) {
+	//		Objects.requireNonNull(availableVariables, "Available variables must be set before calling this method.");
+	//		List<VariableField<?, ?>> variableFields = valueStringToList(valueString);
+	//		set(variableFields);
+	//	}
+
+	//	@Override
+	//	public List<VariableField<?, ?>> get() {
+	//		Objects.requireNonNull(availableVariables, "Available variables must be set before calling this method.");
+	//		if (isInitialized()) {
+	//			String data = treezList.getData(",");
+	//			List<VariableField<?, ?>> variableFields = valueStringToList(data);
+	//			return variableFields;
+	//		} else {
+	//			return getDefaultValue();
+	//		}
+	//	}
 
 	//#end region
 
@@ -269,7 +282,7 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 		return stringValues;
 	}
 
-	public VariableList setDefaultValue(String defaultValueString) {
+	public FilePathList setDefaultValue(String defaultValueString) {
 		this.defaultValueString = defaultValueString;
 		return getThis();
 	}
@@ -283,48 +296,48 @@ public class VariableList extends AbstractAttributeAtom<VariableList, List<Varia
 	 *
 	 * @param availableVariableFields
 	 */
-	public VariableList setAvailableVariables(List<VariableField<?, ?>> availableVariableFields) {
-
-		//get list of previously selected variables
-		List<VariableField<?, ?>> oldFields = new ArrayList<>();
-		if (availableVariables != null) {
-			oldFields = get();
-		}
-
-		//get names and create a map from variable names to variable fields
-
-		List<String> availableVariableNames = new ArrayList<>(); //keeps order of names (map wont do so)
-		availableVariables = new HashMap<>();
-
-		if (availableVariableFields != null) {
-			for (VariableField<?, ?> variableField : availableVariableFields) {
-				String variableName = variableField.getName();
-				availableVariableNames.add(variableName);
-				availableVariables.put(variableName, variableField);
-			}
-		}
-
-		//get single string that contains all available variable names
-		String availableVariableNameString = String.join(",", availableVariableNames);
-
-		//set available string items
-		treezList.setAvailableStringItems(availableVariableNameString);
-
-		//filter old non existing values
-		List<VariableField<?, ?>> newVariableFields = new ArrayList<>();
-		for (VariableField<?, ?> oldField : oldFields) {
-			String oldName = oldField.getName();
-			boolean variableExists = availableVariables.containsKey(oldName);
-			if (variableExists) {
-				newVariableFields.add(oldField);
-			}
-		}
-
-		//update selected variable fields
-		set(newVariableFields);
-		return getThis();
-
-	}
+	//	public FilePathList setAvailableVariables(List<VariableField<?, ?>> availableVariableFields) {
+	//
+	//		//get list of previously selected variables
+	//		List<VariableField<?, ?>> oldFields = new ArrayList<>();
+	//		if (availableVariables != null) {
+	//			oldFields = get();
+	//		}
+	//
+	//		//get names and create a map from variable names to variable fields
+	//
+	//		List<String> availableVariableNames = new ArrayList<>(); //keeps order of names (map wont do so)
+	//		availableVariables = new HashMap<>();
+	//
+	//		if (availableVariableFields != null) {
+	//			for (VariableField<?, ?> variableField : availableVariableFields) {
+	//				String variableName = variableField.getName();
+	//				availableVariableNames.add(variableName);
+	//				availableVariables.put(variableName, variableField);
+	//			}
+	//		}
+	//
+	//		//get single string that contains all available variable names
+	//		String availableVariableNameString = String.join(",", availableVariableNames);
+	//
+	//		//set available string items
+	//		treezList.setAvailableStringItems(availableVariableNameString);
+	//
+	//		//filter old non existing values
+	//		List<VariableField<?, ?>> newVariableFields = new ArrayList<>();
+	//		for (VariableField<?, ?> oldField : oldFields) {
+	//			String oldName = oldField.getName();
+	//			boolean variableExists = availableVariables.containsKey(oldName);
+	//			if (variableExists) {
+	//				newVariableFields.add(oldField);
+	//			}
+	//		}
+	//
+	//		//update selected variable fields
+	//		set(newVariableFields);
+	//		return getThis();
+	//
+	//	}
 
 	public void addVariable(VariableField<?, ?> variableField) {
 		String variableName = variableField.getName();
