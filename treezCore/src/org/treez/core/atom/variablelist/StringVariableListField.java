@@ -263,7 +263,7 @@ public class StringVariableListField extends AbstractVariableListField<StringVar
 	}
 
 	@Override
-	public void set(List<String> valueList) {
+	public StringVariableListField set(List<String> valueList) {
 		disableModificationListeners();
 		if (valueList.isEmpty()) {
 			setValueString("");
@@ -273,6 +273,7 @@ public class StringVariableListField extends AbstractVariableListField<StringVar
 		}
 		enableModificationListeners();
 		triggerListeners();
+		return getThis();
 	}
 
 	//#end region
